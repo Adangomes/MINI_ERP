@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini ERP - Produtos & Grade</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <h1>Mini ERP - Moda</h1>
+        <nav>
+            <a href="produtos.html">Estoque & Produtos</a>
+            <a href="pdv.html">Caixa / PDV</a>
+            <a href="index.html" onclick="localStorage.clear()">Sair</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Cadastrar Produto & Matriz de Grade</h2>
+            <form id="formProduto" class="form-grid">
+                <input type="text" id="nome" placeholder="Nome do Produto" required>
+                <input type="text" id="categoria" placeholder="Categoria (ex: Camisetas)" required>
+                <input type="number" step="0.01" id="precoBase" placeholder="Preço Base (R$)" required>
+                <select id="tamanho" required>
+                    <option value="PP">Tamanho PP</option>
+                    <option value="P">Tamanho P</option>
+                    <option value="M" selected>Tamanho M</option>
+                    <option value="G">Tamanho G</option>
+                    <option value="GG">Tamanho GG</option>
+                </select>
+                <input type="text" id="cor" placeholder="Cor (ex: Preto)" required>
+                <input type="number" id="quantidade" placeholder="Qtd Estoque" required>
+                <input type="text" id="codigoBarra" placeholder="Código de Barras">
+                <button type="submit">Salvar Produto / Grade</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Catálogo de Produtos e Grade SKUs</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Preço</th>
+                        <th>Grades em Estoque</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyProdutos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/produtos.js"></script>
+</body>
+</html>

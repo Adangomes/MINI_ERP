@@ -1,0 +1,28 @@
+services:
+  iris-db:
+    build:
+      context: ./docker/iris
+    container_name: erp_iris_db
+    command: ["iris", "--after", "bash /opt/app/bootstrap.sh"]
+    ports:
+      - "52773:52773"
+      - "57772:57772"
+      - "1972:1972"
+    volumes:
+      - ./backend/src:/opt/app/src
+      - iris-user-data:/usr/irissys/mgr/user
+
+  nginx:
+    image: nginx:alpine
+    container_name: erp_nginx_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - iris-db
+
+volumes:
+  iris-user-data:
+    name: mini-erp-roupas-iris-user-data

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini ERP - Caixa / PDV</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <h1>Mini ERP - Caixa PDV</h1>
+        <nav>
+            <a href="produtos.html">Estoque & Produtos</a>
+            <a href="pdv.html">Caixa / PDV</a>
+            <a href="index.html" onclick="localStorage.clear()">Sair</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Registrar Venda (Baixa de Estoque Transacional)</h2>
+            <form id="formVenda" style="display: flex; gap: 15px; flex-direction: column;">
+                <select id="selectSKU" required></select>
+                <input type="number" id="qtdVenda" placeholder="Quantidade a Vender" min="1" value="1" required>
+                <button type="submit" style="background-color: #16a34a;">Finalizar Venda & Dar Baixa</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Histórico de Vendas</h2>
+            <form id="formFiltroVendas" class="form-grid">
+                <select id="periodoVenda" aria-label="Período do histórico">
+                    <option value="dia">Por dia</option>
+                    <option value="mes">Por mês</option>
+                    <option value="ano">Por ano</option>
+                </select>
+                <input type="date" id="dataVenda" aria-label="Dia das vendas">
+                <input type="month" id="mesVenda" aria-label="Mês das vendas" hidden>
+                <input type="number" id="anoVenda" aria-label="Ano das vendas" min="1900" max="9999" hidden>
+                <button type="submit">Consultar histórico</button>
+            </form>
+            <p id="resumoVendas" class="sales-summary" aria-live="polite"></p>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data e hora</th>
+                            <th>Produto</th>
+                            <th>Variação</th>
+                            <th>Quantidade</th>
+                            <th>Valor</th>
+                            <th>Usuário</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyVendas"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/vendas.js"></script>
+</body>
+</html>
