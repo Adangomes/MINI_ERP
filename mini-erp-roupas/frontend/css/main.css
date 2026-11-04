@@ -8,7 +8,8 @@ header nav a:hover { color: #white; }
 h2 { margin-bottom: 20px; color: #0f172a; }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
 .form-grid [hidden] { display: none; }
-input, select, button { padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; width: 100%; }
+input, select, textarea, button { padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; width: 100%; }
+textarea { min-height: 100px; resize: vertical; }
 button { background-color: #2563eb; color: white; border: none; font-weight: bold; cursor: pointer; transition: background 0.2s; }
 button:hover { background-color: #1d4ed8; }
 .sales-summary { margin-top: 16px; color: #334155; font-weight: 600; }
@@ -19,3 +20,10 @@ th { background-color: #f8fafc; color: #64748b; }
 .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background: #e2e8f0; }
 .badge-stock { background: #dcfce7; color: #15803d; }
 .login-box { max-width: 400px; margin: 80px auto; text-align: center; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+.stat-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.stat-box span { color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.stat-box strong { font-size: 1.2rem; color: #0f172a; }
+td.payment-history { min-width: 220px; white-space: pre-line; }
+td.purchase-items { white-space: pre-line; }
+td button:disabled { cursor: wait; opacity: .65; }

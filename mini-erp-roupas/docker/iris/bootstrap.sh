@@ -15,6 +15,27 @@ if result.%SQLCODE < 0 halt 1
 set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.Venda TO %DB_USER")
 if result.%SQLCODE < 0 write result.%Message,!
 if result.%SQLCODE < 0 halt 1
+set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.Cliente TO %DB_USER")
+if result.%SQLCODE < 0 write result.%Message,!
+if result.%SQLCODE < 0 halt 1
+set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.Fornecedor TO %DB_USER")
+if result.%SQLCODE < 0 write result.%Message,!
+if result.%SQLCODE < 0 halt 1
+set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.Compra TO %DB_USER")
+if result.%SQLCODE < 0 write result.%Message,!
+if result.%SQLCODE < 0 halt 1
+set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.CompraItem TO %DB_USER")
+if result.%SQLCODE < 0 write result.%Message,!
+if result.%SQLCODE < 0 halt 1
+set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.Conta TO %DB_USER")
+if result.%SQLCODE < 0 write result.%Message,!
+if result.%SQLCODE < 0 halt 1
+set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.ContaPagamento TO %DB_USER")
+if result.%SQLCODE < 0 write result.%Message,!
+if result.%SQLCODE < 0 halt 1
+set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.MovimentoCaixa TO %DB_USER")
+if result.%SQLCODE < 0 write result.%Message,!
+if result.%SQLCODE < 0 halt 1
 halt
 OBJECTSCRIPT
 

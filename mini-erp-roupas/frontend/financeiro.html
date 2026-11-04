@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini ERP - Financeiro</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <h1>Mini ERP - Financeiro</h1>
+        <nav>
+            <a href="produtos.html">Estoque</a>
+            <a href="clientes.html">Clientes</a>
+            <a href="fornecedores.html">Fornecedores</a>
+            <a href="compras.html">Compras</a>
+            <a href="financeiro.html">Financeiro</a>
+            <a href="pdv.html">PDV</a>
+            <a href="index.html" onclick="localStorage.clear()">Sair</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Resumo financeiro simplificado</h2>
+            <div id="dreResumo" class="stats-grid"></div>
+        </div>
+
+        <div class="card">
+            <h2>Desempenho de vendas</h2>
+            <form id="formPeriodoVendas" class="form-grid">
+                <select id="periodoRelatorio" aria-label="Período do relatório">
+                    <option value="dia">Por dia</option>
+                    <option value="mes" selected>Por mês</option>
+                    <option value="ano">Por ano</option>
+                </select>
+                <input type="date" id="dataRelatorio" aria-label="Dia do relatório" hidden>
+                <input type="month" id="mesRelatorio" aria-label="Mês do relatório">
+                <input type="number" id="anoRelatorio" aria-label="Ano do relatório" min="1900" max="9999" hidden>
+                <button type="submit">Atualizar relatório</button>
+                <button type="button" id="exportarVendas">Exportar vendas CSV</button>
+            </form>
+            <div id="resumoVendas" class="stats-grid"></div>
+        </div>
+
+        <div class="card">
+            <h2>Registrar Movimento de Caixa</h2>
+            <form id="formCaixa" class="form-grid">
+                <select id="tipoCaixa" required>
+                    <option value="Entrada">Entrada</option>
+                    <option value="Saida">Saída</option>
+                </select>
+                <input type="text" id="descricaoCaixa" placeholder="Descrição" required>
+                <input type="number" id="valorCaixa" placeholder="Valor" step="0.01" min="0.01" required>
+                <input type="text" id="referenciaCaixa" placeholder="Referência (opcional)">
+                <button type="submit">Salvar Movimento</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Registrar Conta a Receber / Pagar</h2>
+            <form id="formConta" class="form-grid">
+                <select id="tipoConta" required>
+                    <option value="Receber">Conta a Receber</option>
+                    <option value="Pagar">Conta a Pagar</option>
+                </select>
+                <input type="text" id="descricaoConta" placeholder="Descrição" required>
+                <input type="number" id="valorConta" placeholder="Valor" step="0.01" min="0.01" required>
+                <input type="date" id="vencimentoConta" required>
+                <input type="text" id="origemNomeConta" placeholder="Cliente / Fornecedor">
+                <button type="submit">Salvar Conta</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Movimento de Caixa</h2>
+            <form id="formFiltroCaixa" class="form-grid">
+                <input type="date" id="inicioCaixa" aria-label="Data inicial">
+                <input type="date" id="fimCaixa" aria-label="Data final">
+                <button type="submit">Filtrar caixa</button>
+                <button type="button" id="exportarCaixa">Exportar caixa CSV</button>
+            </form>
+            <div id="resumoCaixa" class="stats-grid" aria-live="polite"></div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Referência</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyCaixa"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Contas a Receber / Pagar</h2>
+            <button type="button" id="exportarContas">Exportar contas CSV</button>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Pago</th>
+                            <th>Restante</th>
+                            <th>Vencimento</th>
+                            <th>Status</th>
+                            <th>Origem</th>
+                            <th>Histórico de pagamentos</th>
+                            <th>Pagamento</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyContas"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/financeiro.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini ERP - Fornecedores</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <h1>Mini ERP - Fornecedores</h1>
+        <nav>
+            <a href="produtos.html">Estoque</a>
+            <a href="clientes.html">Clientes</a>
+            <a href="fornecedores.html">Fornecedores</a>
+            <a href="compras.html">Compras</a>
+            <a href="financeiro.html">Financeiro</a>
+            <a href="pdv.html">PDV</a>
+            <a href="index.html" onclick="localStorage.clear()">Sair</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Cadastrar Fornecedor</h2>
+            <form id="formFornecedor" class="form-grid">
+                <input type="text" id="nomeFornecedor" placeholder="Nome do fornecedor" required>
+                <input type="email" id="emailFornecedor" placeholder="E-mail">
+                <input type="text" id="telefoneFornecedor" placeholder="Telefone">
+                <input type="text" id="documentoFornecedor" placeholder="CNPJ / CPF">
+                <input type="text" id="enderecoFornecedor" placeholder="Endereço">
+                <textarea id="observacaoFornecedor" placeholder="Observações"></textarea>
+                <button type="submit">Salvar Fornecedor</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Listagem de Fornecedores</h2>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Documento</th>
+                            <th>Telefone</th>
+                            <th>E-mail</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyFornecedores"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/fornecedores.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini ERP - Compras</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <h1>Mini ERP - Compras e Entrada</h1>
+        <nav>
+            <a href="produtos.html">Estoque</a>
+            <a href="clientes.html">Clientes</a>
+            <a href="fornecedores.html">Fornecedores</a>
+            <a href="compras.html">Compras</a>
+            <a href="financeiro.html">Financeiro</a>
+            <a href="pdv.html">PDV</a>
+            <a href="index.html" onclick="localStorage.clear()">Sair</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Registrar Compra / Entrada no Estoque</h2>
+            <form id="formCompra" class="form-grid">
+                <select id="selectFornecedor" required></select>
+                <select id="selectSKUCompra" required></select>
+                <input type="number" id="qtdCompra" placeholder="Quantidade" min="1" value="1" required>
+                <input type="number" id="custoUnitarioCompra" placeholder="Custo unitário" step="0.01" min="0.01" required>
+                <input type="date" id="vencimentoCompra" aria-label="Vencimento da conta a pagar" required>
+                <textarea id="obsCompra" placeholder="Observações da compra"></textarea>
+                <button type="submit">Salvar Compra / Entrada</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Histórico de Compras</h2>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Data</th>
+                            <th>Fornecedor</th>
+                            <th>Itens</th>
+                            <th>Valor Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyCompras"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/compras.js"></script>
+</body>
+</html>

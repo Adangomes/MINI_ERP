@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini ERP - Clientes</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <h1>Mini ERP - Clientes</h1>
+        <nav>
+            <a href="produtos.html">Estoque</a>
+            <a href="clientes.html">Clientes</a>
+            <a href="fornecedores.html">Fornecedores</a>
+            <a href="compras.html">Compras</a>
+            <a href="financeiro.html">Financeiro</a>
+            <a href="pdv.html">PDV</a>
+            <a href="index.html" onclick="localStorage.clear()">Sair</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Cadastrar Cliente</h2>
+            <form id="formCliente" class="form-grid">
+                <input type="text" id="nomeCliente" placeholder="Nome do cliente" required>
+                <input type="email" id="emailCliente" placeholder="E-mail">
+                <input type="text" id="telefoneCliente" placeholder="Telefone">
+                <select id="tipoDocumentoCliente">
+                    <option value="CPF">CPF</option>
+                    <option value="CNPJ">CNPJ</option>
+                </select>
+                <input type="text" id="documentoCliente" placeholder="CPF / CNPJ">
+                <input type="text" id="enderecoCliente" placeholder="Endereço">
+                <button type="submit">Salvar Cliente</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Listagem de Clientes</h2>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Documento</th>
+                            <th>Telefone</th>
+                            <th>E-mail</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyClientes"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/clientes.js"></script>
+</body>
+</html>
