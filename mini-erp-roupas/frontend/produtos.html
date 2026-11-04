@@ -15,7 +15,8 @@
             <a href="compras.html">Compras</a>
             <a href="financeiro.html">Financeiro</a>
             <a href="pdv.html">Caixa / PDV</a>
-            <a href="index.html" onclick="localStorage.clear()">Sair</a>
+            <a href="configuracao.html">Configuração</a>
+            <a href="index.html" onclick="localStorage.removeItem('token'); localStorage.removeItem('usuario')">Sair</a>
         </nav>
     </header>
 
@@ -38,6 +39,35 @@
                 <input type="text" id="codigoBarra" placeholder="Código de Barras">
                 <button type="submit">Salvar Produto / Grade</button>
             </form>
+        </div>
+
+        <div class="card">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">RASTREABILIDADE</p>
+                    <h2>Movimentações de estoque</h2>
+                </div>
+                <button type="button" id="atualizarMovimentos" class="button-secondary">Atualizar</button>
+            </div>
+            <p class="muted">Entradas, vendas e respectivos saldos, com data, usuário e computador que registrou a operação.</p>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data e hora</th>
+                            <th>Movimento</th>
+                            <th>Produto / variação</th>
+                            <th>Quantidade</th>
+                            <th>Saldo após</th>
+                            <th>Origem</th>
+                            <th>Usuário</th>
+                            <th>Caixa / ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyMovimentosEstoque"></tbody>
+                </table>
+            </div>
+            <p id="resumoMovimentos" class="sales-summary" aria-live="polite"></p>
         </div>
 
         <div class="card">

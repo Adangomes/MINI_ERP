@@ -73,8 +73,11 @@ ClassMethod RegistrarCompra(pJson As %DynamicObject) As %Status
 
         Set compra = ##class(ERP.Model.Compra).%New()
         Set compra.Fornecedor = fornecedor
-        Set compra.Status = $Get(pJson.status, "Aberta")
-        Set compra.Observacao = $Get(pJson.observacao, "")
+        Set compra.Status = pJson.%Get("status", "Aberta")
+        Set compra.Observacao = pJson.%Get("observacao", "")
+        Set compra.Usuario = pJson.%Get("usuario", "admin")
+        Set compra.TerminalId = pJson.%Get("terminalId", "")
+        Set compra.TerminalNome = pJson.%Get("terminalNome", "")
         Set compra.ValorTotal = 0
         $$$THROWONERROR(sc, compra.%Save())
 
@@ -96,8 +99,10 @@ ClassMethod RegistrarCompra(pJson As %DynamicObject) As %Status
             Set totalItem = custoUnitario * quantidade
             Set totalCompra = totalCompra + totalItem
 
-            Set grade.QtdEstoque = grade.QtdEstoque + quantidade
+            Set saldoAnterior = grade.QtdEstoque
+            Set grade.QtdEstoque = saldoAnterior + quantidade
             $$$THROWONERROR(sc, grade.%Save())
+            $$$THROWONERROR(sc, ##class(ERP.Service.EstoqueService).RegistrarMovimento(grade, "Entrada", quantidade, saldoAnterior, grade.QtdEstoque, "Compra", compra.%Id(), compra.Usuario, compra.TerminalId, compra.TerminalNome))
 
             Set compraItem = ##class(ERP.Model.CompraItem).%New()
             Set compraItem.Compra = compra
@@ -117,7 +122,7 @@ ClassMethod RegistrarCompra(pJson As %DynamicObject) As %Status
         Set conta.Valor = totalCompra
         Set conta.ValorPago = 0
         Set conta.Status = "Aberta"
-        Set conta.DataVencimento = $Get(pJson.dataVencimento, $ZDATE($HOROLOG,3))
+        Set conta.DataVencimento = pJson.%Get("dataVencimento", $ZDATE($HOROLOG,3))
         Set conta.OrigemTipo = "Compra"
         Set conta.OrigemNome = fornecedor.Nome
         Set conta.Usuario = "admin"

@@ -1,48 +1,83 @@
 Class ERP.Service.VendaService
 {
 
-ClassMethod RegistrarVenda(pSkuId As %String, pQuantidade As %Integer) As %Status
+ClassMethod RegistrarVenda(pSkuId As %String, pQuantidade As %Integer, pUsuario As %String = "admin", pTerminalId As %String = "", pTerminalNome As %String = "") As %Status
 {
-    // Stock, sale record, and cash entry must either all persist or all roll back.
+    Set itens = []
+    Set item = {}
+    Set item.skuId = pSkuId
+    Set item.quantidade = pQuantidade
+    Do itens.%Push(item)
+    Set carrinho = {}
+    Set carrinho.itens = itens
+    Set carrinho.usuario = pUsuario
+    Set carrinho.terminalId = pTerminalId
+    Set carrinho.terminalNome = pTerminalNome
+    Return ..RegistrarCarrinho(carrinho)
+}
+
+ClassMethod RegistrarCarrinho(pJson As %DynamicObject) As %Status
+{
     TSTART
     Try {
-        If (pSkuId = "") || (pQuantidade <= 0) {
-            Throw ##class(%Exception.General).%New("SKU e quantidade são obrigatórios.")
+        If '$IsObject(pJson) {
+            Throw ##class(%Exception.General).%New("Dados do carrinho inválidos.")
+        }
+        If '$IsObject(pJson.%Get("itens")) {
+            Throw ##class(%Exception.General).%New("O carrinho não contém itens.")
+        }
+        If pJson.itens.%Size() = 0 {
+            Throw ##class(%Exception.General).%New("O carrinho não contém itens.")
         }
 
-        Set sku = ##class(ERP.Model.ItemGrade).%OpenId(pSkuId)
-        If '$IsObject(sku) {
-            Throw ##class(%Exception.General).%New("SKU não encontrado.")
+        Set usuario = pJson.%Get("usuario", "admin")
+        Set terminalId = pJson.%Get("terminalId", "")
+        Set terminalNome = pJson.%Get("terminalNome", "")
+        Set iterator = pJson.itens.%GetIterator()
+        While iterator.%GetNext(.key, .item) {
+            Set skuId = item.%Get("skuId", "")
+            Set quantidade = +item.%Get("quantidade", 0)
+            If (skuId = "") || (quantidade <= 0) {
+                Throw ##class(%Exception.General).%New("SKU e quantidade positiva são obrigatórios.")
+            }
+
+            Set sku = ##class(ERP.Model.ItemGrade).%OpenId(skuId)
+            If '$IsObject(sku) {
+                Throw ##class(%Exception.General).%New("SKU não encontrado.")
+            }
+            If sku.QtdEstoque < quantidade {
+                Throw ##class(%Exception.General).%New("Estoque insuficiente para uma das peças do carrinho.")
+            }
+
+            Set produto = sku.Produto
+            If '$IsObject(produto) {
+                Throw ##class(%Exception.General).%New("Produto associado ao SKU não encontrado.")
+            }
+
+            Set saldoAnterior = sku.QtdEstoque
+            Set valorTotal = produto.PrecoBase * quantidade
+            Set sku.QtdEstoque = saldoAnterior - quantidade
+            $$$THROWONERROR(sc, sku.%Save())
+
+            Set venda = ##class(ERP.Model.Venda).%New()
+            Set venda.ItemGrade = sku
+            Set venda.Quantidade = quantidade
+            Set venda.ValorTotal = valorTotal
+            Set venda.Usuario = usuario
+            Set venda.TerminalId = terminalId
+            Set venda.TerminalNome = terminalNome
+            $$$THROWONERROR(sc, venda.%Save())
+
+            $$$THROWONERROR(sc, ##class(ERP.Service.EstoqueService).RegistrarMovimento(sku, "Saida", quantidade, saldoAnterior, sku.QtdEstoque, "Venda", venda.%Id(), usuario, terminalId, terminalNome))
+
+            Set movimento = ##class(ERP.Model.MovimentoCaixa).%New()
+            Set movimento.Tipo = "Entrada"
+            Set movimento.Descricao = "Venda #" _ venda.%Id()
+            Set movimento.Valor = valorTotal
+            Set movimento.Referencia = "Venda:" _ venda.%Id()
+            Set movimento.Usuario = usuario
+            $$$THROWONERROR(sc, movimento.%Save())
         }
-
-        If sku.QtdEstoque < pQuantidade {
-            Throw ##class(%Exception.General).%New("Estoque insuficiente para esta venda.")
-        }
-
-        Set produto = sku.Produto
-        If '$IsObject(produto) {
-            Throw ##class(%Exception.General).%New("Produto associado ao SKU não encontrado.")
-        }
-
-        Set valorTotal = produto.PrecoBase * pQuantidade
-
-        Set sku.QtdEstoque = sku.QtdEstoque - pQuantidade
-        $$$THROWONERROR(sc, sku.%Save())
-
-        Set venda = ##class(ERP.Model.Venda).%New()
-        Set venda.ItemGrade = sku
-        Set venda.Quantidade = pQuantidade
-        Set venda.ValorTotal = valorTotal
-        Set venda.Usuario = "admin"
-        $$$THROWONERROR(sc, venda.%Save())
-
-        Set movimento = ##class(ERP.Model.MovimentoCaixa).%New()
-        Set movimento.Tipo = "Entrada"
-        Set movimento.Descricao = "Venda #" _ venda.%Id()
-        Set movimento.Valor = valorTotal
-        Set movimento.Referencia = "Venda:" _ venda.%Id()
-        Set movimento.Usuario = venda.Usuario
-        $$$THROWONERROR(sc, movimento.%Save())
 
         TCOMMIT
         Return $$$OK
@@ -58,7 +93,7 @@ ClassMethod Listar(pPeriodo As %String, pData As %String, pFuso As %Integer, ByR
     Set pVendas = []
 
     Try {
-        Set sql = "SELECT ID, DataHora, ItemGrade, Quantidade, ValorTotal, Usuario FROM ERP_Model.Venda"
+        Set sql = "SELECT ID, DataHora, ItemGrade, Quantidade, ValorTotal, Usuario, TerminalId, TerminalNome FROM ERP_Model.Venda"
         Set statement = ##class(%SQL.Statement).%New()
         $$$THROWONERROR(sc, statement.%Prepare(sql))
 
@@ -72,6 +107,8 @@ ClassMethod Listar(pPeriodo As %String, pData As %String, pFuso As %Integer, ByR
                 Set item.quantidade = rset.%Get("Quantidade")
                 Set item.valorTotal = rset.%Get("ValorTotal")
                 Set item.usuario = rset.%Get("Usuario")
+                Set item.terminalId = rset.%Get("TerminalId")
+                Set item.terminalNome = rset.%Get("TerminalNome")
 
                 Set itemGradeId = rset.%Get("ItemGrade")
                 If itemGradeId '= "" {

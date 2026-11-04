@@ -49,6 +49,14 @@ ClassMethod CriarOuAtualizar(pJson As %DynamicObject) As %Status
 {
     TSTART
     Try {
+        If '$IsObject(pJson) {
+            Throw ##class(%Exception.General).%New("Dados do produto inválidos.")
+        }
+        Set quantidade = +pJson.%Get("quantidade", 0)
+        If quantidade < 0 {
+            Throw ##class(%Exception.General).%New("A quantidade inicial não pode ser negativa.")
+        }
+
         Set prod = ""
         If pJson.id '= "" {
             Set prod = ##class(ERP.Model.Produto).%OpenId(pJson.id)
@@ -89,10 +97,14 @@ ClassMethod CriarOuAtualizar(pJson As %DynamicObject) As %Status
             Set sku.Cor = pJson.cor
         }
         
-        Set sku.QtdEstoque = sku.QtdEstoque + pJson.quantidade
+        Set saldoAnterior = sku.QtdEstoque
+        Set sku.QtdEstoque = saldoAnterior + quantidade
         Set sku.CodigoBarra = pJson.codigoBarra
         
         $$$THROWONERROR(sc, sku.%Save())
+        If quantidade > 0 {
+            $$$THROWONERROR(sc, ##class(ERP.Service.EstoqueService).RegistrarMovimento(sku, "Entrada", quantidade, saldoAnterior, sku.QtdEstoque, "Cadastro de produto", prod.%Id(), pJson.%Get("usuario", "admin"), pJson.%Get("terminalId", ""), pJson.%Get("terminalNome", "")))
+        }
         
         TCOMMIT
         Return $$$OK

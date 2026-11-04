@@ -31,6 +31,7 @@
                 });
                 if (res.sucesso && res.dados && res.dados.token) {
                     localStorage.setItem('token', res.dados.token);
+                    localStorage.setItem('usuario', document.getElementById('usuario').value);
                     window.location.href = 'produtos.html';
                 }
             } catch (err) {

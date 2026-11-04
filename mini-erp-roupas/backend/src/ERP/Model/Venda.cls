@@ -12,6 +12,8 @@ Property Quantidade As %Integer [ Required ];
 Property ValorTotal As %Currency [ Required ];
 /// Guarda o usuário responsável e assume admin quando não informado.
 Property Usuario As %String [ InitialExpression = "admin" ];
+Property TerminalId As %String(MAXLEN = 100);
+Property TerminalNome As %String(MAXLEN = 100);
 
 /// Fecha a definição da classe.
 }

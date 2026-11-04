@@ -7,6 +7,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
     <Route Url="/login" Method="POST" Call="Login"/>
     <Route Url="/produtos" Method="GET" Call="ListarProdutos"/>
     <Route Url="/produtos" Method="POST" Call="SalvarProduto"/>
+    <Route Url="/estoque/movimentos" Method="GET" Call="ListarMovimentosEstoque"/>
     <Route Url="/clientes" Method="GET" Call="ListarClientes"/>
     <Route Url="/clientes" Method="POST" Call="SalvarCliente"/>
     <Route Url="/fornecedores" Method="GET" Call="ListarFornecedores"/>
@@ -49,6 +50,17 @@ ClassMethod ListarProdutos() As %Status
 {
     Try {
         Set lista = ##class(ERP.Service.ProdutoService).Listar()
+        Return ##class(ERP.Util.Response).Send("200 OK", lista)
+    }
+    Catch ex {
+        Return ##class(ERP.Util.Response).SendError("500 Internal Error", ex.DisplayString())
+    }
+}
+
+ClassMethod ListarMovimentosEstoque() As %Status
+{
+    Try {
+        Set lista = ##class(ERP.Service.EstoqueService).ListarMovimentos()
         Return ##class(ERP.Util.Response).Send("200 OK", lista)
     }
     Catch ex {
@@ -250,11 +262,15 @@ ClassMethod RealizarVenda() As %Status
         Set body = %request.Content
         Set json = ##class(%DynamicAbstractObject).%FromJSON(body)
         
-        Set sc = ##class(ERP.Service.VendaService).RegistrarVenda(json.skuId, json.quantidade)
+        If $IsObject(json.%Get("itens")) {
+            Set sc = ##class(ERP.Service.VendaService).RegistrarCarrinho(json)
+        } Else {
+            Set sc = ##class(ERP.Service.VendaService).RegistrarVenda(json.%Get("skuId", ""), +json.%Get("quantidade", 0), json.%Get("usuario", "admin"), json.%Get("terminalId", ""), json.%Get("terminalNome", ""))
+        }
         If $$$ISOK(sc) {
             Return ##class(ERP.Util.Response).SendSuccess("Venda realizada com sucesso!")
         } Else {
-            Return ##class(ERP.Util.Response).SendError("400 Bad Request", "Falha na transação de venda.")
+            Return ##class(ERP.Util.Response).SendError("400 Bad Request", $SYSTEM.Status.GetErrorText(sc))
         }
     }
     Catch ex {

@@ -1,26 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
     carregarProdutos();
+    carregarMovimentosEstoque();
+    document.getElementById('atualizarMovimentos')?.addEventListener('click', carregarMovimentosEstoque);
 
     const form = document.getElementById('formProduto');
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                nome: document.getElementById('nome').value,
-                categoria: document.getElementById('categoria').value,
-                precoBase: parseFloat(document.getElementById('precoBase').value),
-                tamanho: document.getElementById('tamanho').value,
-                cor: document.getElementById('cor').value,
-                quantidade: parseInt(document.getElementById('quantidade').value),
-                codigoBarra: document.getElementById('codigoBarra').value
-            };
+    form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+            nome: document.getElementById('nome').value.trim(),
+            categoria: document.getElementById('categoria').value.trim(),
+            precoBase: Number.parseFloat(document.getElementById('precoBase').value),
+            tamanho: document.getElementById('tamanho').value,
+            cor: document.getElementById('cor').value.trim(),
+            quantidade: Number.parseInt(document.getElementById('quantidade').value, 10),
+            codigoBarra: document.getElementById('codigoBarra').value.trim()
+        };
 
+        try {
             await apiRequest('/produtos', 'POST', payload);
-            alert('Produto/Estoque cadastrado com sucesso!');
+            alert('Produto/estoque cadastrado com sucesso!');
             form.reset();
-            carregarProdutos();
-        });
-    }
+            await Promise.all([carregarProdutos(), carregarMovimentosEstoque()]);
+        } catch (error) {
+            console.error('Não foi possível salvar o produto:', error);
+        }
+    });
 });
 
 async function carregarProdutos() {
@@ -29,24 +33,72 @@ async function carregarProdutos() {
 
     try {
         const produtos = await apiRequest('/produtos');
-        tabela.innerHTML = '';
-
-        produtos.forEach(p => {
-            let gradesHtml = p.grades.map(g => 
-                `<span class="badge badge-stock">${g.tamanho} (${g.cor}): ${g.qtdEstoque} un</span>`
-            ).join(' ');
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>#${p.id}</td>
-                <td><strong>${p.nome}</strong></td>
-                <td>${p.categoria}</td>
-                <td>R$ ${p.precoBase.toFixed(2)}</td>
-                <td>${gradesHtml || 'Sem grade'}</td>
-            `;
-            tabela.appendChild(tr);
+        tabela.replaceChildren();
+        produtos.forEach((produto) => {
+            const linha = document.createElement('tr');
+            const valores = [
+                `#${produto.id}`,
+                produto.nome,
+                produto.categoria,
+                Number(produto.precoBase || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+            ];
+            valores.forEach((valor) => {
+                const celula = document.createElement('td');
+                celula.textContent = valor || '-';
+                linha.appendChild(celula);
+            });
+            const grades = document.createElement('td');
+            (produto.grades || []).forEach((grade) => {
+                const badge = document.createElement('span');
+                badge.className = 'badge badge-stock';
+                badge.textContent = `${grade.tamanho} (${grade.cor}): ${grade.qtdEstoque} un`;
+                grades.appendChild(badge);
+                grades.append(' ');
+            });
+            if (!produto.grades?.length) grades.textContent = 'Sem grade';
+            linha.appendChild(grades);
+            tabela.appendChild(linha);
         });
-    } catch (e) {
-        console.error(e);
+    } catch (error) {
+        console.error('Não foi possível carregar os produtos:', error);
+    }
+}
+
+async function carregarMovimentosEstoque() {
+    const tabela = document.getElementById('tbodyMovimentosEstoque');
+    const resumo = document.getElementById('resumoMovimentos');
+    if (!tabela || !resumo) return;
+
+    try {
+        const movimentos = await apiRequest('/estoque/movimentos');
+        tabela.replaceChildren();
+        movimentos.forEach((movimento) => {
+            const dataHora = new Date(`${String(movimento.dataHora).replace(' ', 'T')}Z`);
+            const terminal = movimento.terminalNome
+                ? `${movimento.terminalNome} (${String(movimento.terminalId || '').slice(0, 8) || 'sem ID'})`
+                : 'Não identificado';
+            const linha = document.createElement('tr');
+            [
+                Number.isNaN(dataHora.getTime()) ? movimento.dataHora : dataHora.toLocaleString('pt-BR'),
+                movimento.tipo,
+                `${movimento.produto || 'Produto'} · ${movimento.tamanho || '-'} / ${movimento.cor || '-'}`,
+                `${movimento.tipo === 'Saida' ? '-' : '+'}${movimento.quantidade}`,
+                movimento.saldoAtual,
+                movimento.origem || '-',
+                movimento.usuario || '-',
+                terminal
+            ].forEach((valor) => {
+                const celula = document.createElement('td');
+                celula.textContent = valor;
+                linha.appendChild(celula);
+            });
+            tabela.appendChild(linha);
+        });
+        resumo.textContent = movimentos.length
+            ? `${movimentos.length} movimentação(ões) registrada(s).`
+            : 'Ainda não há movimentações registradas.';
+    } catch (error) {
+        resumo.textContent = 'Não foi possível carregar as movimentações de estoque.';
+        console.error('Falha ao carregar movimentações:', error);
     }
 }

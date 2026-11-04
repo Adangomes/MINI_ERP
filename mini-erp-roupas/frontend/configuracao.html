@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mini ERP - Configuração do Caixa</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <h1>Mini ERP - Configuração do Caixa</h1>
+        <nav>
+            <a href="produtos.html">Estoque</a>
+            <a href="clientes.html">Clientes</a>
+            <a href="fornecedores.html">Fornecedores</a>
+            <a href="compras.html">Compras</a>
+            <a href="financeiro.html">Financeiro</a>
+            <a href="pdv.html">PDV</a>
+            <a href="configuracao.html" aria-current="page">Configuração</a>
+            <a href="index.html" onclick="localStorage.removeItem('token'); localStorage.removeItem('usuario')">Sair</a>
+        </nav>
+    </header>
+
+    <main class="container settings-page">
+        <section class="card">
+            <p class="eyebrow">ESTAÇÃO DE TRABALHO</p>
+            <h2>Identificação deste caixa</h2>
+            <p class="muted">O identificador é criado uma vez neste navegador e enviado junto com cada operação de estoque.</p>
+            <form id="formConfiguracao" class="settings-form">
+                <label for="terminalNome">Nome do caixa / computador</label>
+                <input id="terminalNome" maxlength="100" required>
+                <label for="terminalId">ID único desta instalação do navegador</label>
+                <input id="terminalId" readonly>
+                <p class="field-help">Este ID permanece salvo mesmo quando você sair da conta. Para outra máquina, abra o sistema em outro navegador/perfil para gerar outro ID.</p>
+
+                <label class="setting-toggle">
+                    <input type="checkbox" id="leitorAtivo">
+                    <span><strong>Leitor de código de barras</strong><small>Leitores USB que digitam o código e pressionam Enter funcionam como teclado.</small></span>
+                </label>
+                <label class="setting-toggle">
+                    <input type="checkbox" id="imprimirAutomatico">
+                    <span><strong>Imprimir comprovante após a venda</strong><small>A impressão abre a caixa de diálogo do navegador para escolher a impressora instalada.</small></span>
+                </label>
+
+                <div class="settings-actions">
+                    <button type="submit">Salvar configuração</button>
+                    <button type="button" class="button-secondary" id="testarImpressao">Testar impressão</button>
+                </div>
+                <p id="statusConfiguracao" class="status-message" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+
+        <section class="card">
+            <p class="eyebrow">PERIFÉRICOS</p>
+            <h2>Leitor e impressora</h2>
+            <div class="settings-info-grid">
+                <div>
+                    <h3>Leitor</h3>
+                    <p>Conecte um leitor USB configurado em modo teclado. No PDV, mantenha o campo de bipagem em foco; cada leitura seguida de Enter adiciona a peça ao carrinho.</p>
+                </div>
+                <div>
+                    <h3>Impressora térmica</h3>
+                    <p>Instale a Argox, Elgin ou Zebra no macOS/Windows e configure o papel no sistema. O navegador não permite que o ERP descubra impressoras ou imprima silenciosamente; a escolha ocorre na janela de impressão.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div id="printArea" class="receipt-print" aria-hidden="true"></div>
+    <script src="js/api.js"></script>
+    <script src="js/configuracao.js"></script>
+</body>
+</html>

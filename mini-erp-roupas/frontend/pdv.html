@@ -2,36 +2,106 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mini ERP - Caixa / PDV</title>
     <link rel="stylesheet" href="css/main.css">
 </head>
-<body>
+<body class="pos-page">
     <header>
-        <h1>Mini ERP - Caixa PDV</h1>
+        <h1>Mini ERP <span class="header-subtitle">Caixa / PDV</span></h1>
         <nav>
-            <a href="produtos.html">Estoque & Produtos</a>
+            <a href="produtos.html">Estoque</a>
             <a href="clientes.html">Clientes</a>
             <a href="fornecedores.html">Fornecedores</a>
             <a href="compras.html">Compras</a>
             <a href="financeiro.html">Financeiro</a>
-            <a href="pdv.html">Caixa / PDV</a>
-            <a href="index.html" onclick="localStorage.clear()">Sair</a>
+            <a href="pdv.html" aria-current="page">PDV</a>
+            <a href="configuracao.html">Configuração</a>
+            <a href="index.html" onclick="localStorage.removeItem('token'); localStorage.removeItem('usuario')">Sair</a>
         </nav>
     </header>
 
-    <div class="container">
-        <div class="card">
-            <h2>Registrar Venda (Baixa de Estoque Transacional)</h2>
-            <form id="formVenda" style="display: flex; gap: 15px; flex-direction: column;">
-                <select id="selectSKU" required></select>
-                <input type="number" id="qtdVenda" placeholder="Quantidade a Vender" min="1" value="1" required>
-                <button type="submit" style="background-color: #16a34a;">Finalizar Venda & Dar Baixa</button>
-            </form>
+    <main class="container pos-container">
+        <section class="pos-heading">
+            <div>
+                <p class="eyebrow">PONTO DE VENDA</p>
+                <h2>Frente de caixa</h2>
+                <p class="muted">Bipe os produtos ou selecione manualmente para montar a venda.</p>
+            </div>
+            <div class="terminal-pill"><span class="status-dot"></span><span id="terminalResumo">Caixa conectado</span></div>
+        </section>
+
+        <div class="pos-layout">
+            <section class="card pos-entry-card">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">ADICIONAR PEÇA</p>
+                        <h2>Leitura rápida</h2>
+                    </div>
+                    <span class="scanner-mark" aria-hidden="true">⌁</span>
+                </div>
+                <form id="formLeitura" class="scanner-form">
+                    <label for="codigoBipado">Código de barras / EAN</label>
+                    <div class="scanner-input-row">
+                        <input id="codigoBipado" autocomplete="off" inputmode="none" placeholder="Clique aqui e bipe o produto" aria-describedby="scannerAjuda">
+                        <button type="submit">Adicionar</button>
+                    </div>
+                    <p id="scannerAjuda" class="field-help">O leitor USB em modo teclado digita o código e finaliza com Enter.</p>
+                </form>
+
+                <div class="manual-entry">
+                    <label for="selectSKU">Ou encontre pela descrição</label>
+                    <select id="selectSKU">
+                        <option value="">Carregando produtos...</option>
+                    </select>
+                    <div class="manual-entry-actions">
+                        <label for="qtdVenda">Qtd.</label>
+                        <input type="number" id="qtdVenda" min="1" value="1" inputmode="numeric">
+                        <button type="button" class="button-secondary" id="adicionarManual">Adicionar peça</button>
+                    </div>
+                </div>
+                <p id="statusPDV" class="status-message" role="status" aria-live="polite"></p>
+            </section>
+
+            <section class="card cart-card">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">VENDA ATUAL</p>
+                        <h2>Carrinho</h2>
+                    </div>
+                    <button type="button" class="text-button" id="limparCarrinho">Limpar venda</button>
+                </div>
+                <div class="table-scroll cart-table-scroll">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Peça</th>
+                                <th>Qtd.</th>
+                                <th>Unitário</th>
+                                <th>Subtotal</th>
+                                <th><span class="sr-only">Ação</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyCarrinho"></tbody>
+                    </table>
+                    <p id="carrinhoVazio" class="empty-state">Bipe ou selecione uma peça para começar.</p>
+                </div>
+                <div class="cart-footer">
+                    <div class="cart-total-row"><span>Total da venda</span><strong id="totalVenda">R$ 0,00</strong></div>
+                    <button type="button" id="finalizarVenda" class="checkout-button" disabled>Finalizar venda</button>
+                    <button type="button" id="imprimirComprovante" class="button-secondary" hidden>Imprimir último comprovante</button>
+                </div>
+            </section>
         </div>
 
-        <div class="card">
-            <h2>Histórico de Vendas</h2>
-            <form id="formFiltroVendas" class="form-grid">
+        <section class="card history-card">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">CONSULTA</p>
+                    <h2>Histórico de vendas</h2>
+                </div>
+            </div>
+            <form id="formFiltroVendas" class="form-grid history-filter">
                 <select id="periodoVenda" aria-label="Período do histórico">
                     <option value="dia">Por dia</option>
                     <option value="mes">Por mês</option>
@@ -53,14 +123,15 @@
                             <th>Quantidade</th>
                             <th>Valor</th>
                             <th>Usuário</th>
+                            <th>Caixa</th>
                         </tr>
                     </thead>
                     <tbody id="tbodyVendas"></tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
+        </section>
+    </main>
+    <div id="printArea" class="receipt-print" aria-hidden="true"></div>
     <script src="js/api.js"></script>
     <script src="js/vendas.js"></script>
 </body>

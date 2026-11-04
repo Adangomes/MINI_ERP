@@ -12,6 +12,9 @@ if result.%SQLCODE < 0 halt 1
 set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.ItemGrade TO %DB_USER")
 if result.%SQLCODE < 0 write result.%Message,!
 if result.%SQLCODE < 0 halt 1
+set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.MovimentoEstoque TO %DB_USER")
+if result.%SQLCODE < 0 write result.%Message,!
+if result.%SQLCODE < 0 halt 1
 set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.Venda TO %DB_USER")
 if result.%SQLCODE < 0 write result.%Message,!
 if result.%SQLCODE < 0 halt 1
@@ -36,6 +39,9 @@ if result.%SQLCODE < 0 halt 1
 set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.MovimentoCaixa TO %DB_USER")
 if result.%SQLCODE < 0 write result.%Message,!
 if result.%SQLCODE < 0 halt 1
+set sc = ##class(ERP.Service.EstoqueService).MigrarSaldoInicial()
+if $SYSTEM.Status.IsError(sc) do $SYSTEM.OBJ.DisplayError(sc)
+if $SYSTEM.Status.IsError(sc) halt 1
 halt
 OBJECTSCRIPT
 
