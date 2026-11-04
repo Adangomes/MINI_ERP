@@ -83,7 +83,7 @@ ClassMethod RegistrarCompra(pJson As %DynamicObject) As %Status
         While iterator.%GetNext(.key, .item) {
             Set skuId = item.skuId
             Set quantidade = +item.quantidade
-            Set custoUnitario = $ROUND(+item.custoUnitario, 2)
+            Set custoUnitario = +item.custoUnitario
 
             If (skuId = "") || (quantidade <= 0) || (custoUnitario <= 0) {
                 Throw ##class(%Exception.General).%New("SKU, quantidade e custo unitário positivo são obrigatórios.")
@@ -93,7 +93,7 @@ ClassMethod RegistrarCompra(pJson As %DynamicObject) As %Status
                 Throw ##class(%Exception.General).%New("SKU não encontrado para entrada de estoque.")
             }
 
-            Set totalItem = $ROUND(custoUnitario * quantidade, 2)
+            Set totalItem = custoUnitario * quantidade
             Set totalCompra = totalCompra + totalItem
 
             Set grade.QtdEstoque = grade.QtdEstoque + quantidade
@@ -124,11 +124,11 @@ ClassMethod RegistrarCompra(pJson As %DynamicObject) As %Status
         $$$THROWONERROR(sc, conta.%Save())
 
         TCOMMIT
-        Quit $$$OK
+        Return $$$OK
     }
     Catch ex {
         TROLLBACK
-        Quit ex.AsStatus()
+        Return ex.AsStatus()
     }
 }
 

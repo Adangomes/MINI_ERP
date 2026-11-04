@@ -1,8 +1,8 @@
-// Define utilitários compartilhados para responder às requisições HTTP da API.
+/// Define utilitários compartilhados para responder às requisições HTTP da API.
 Class ERP.Util.Response
 {
 
-// Envia um status HTTP e serializa o objeto dinâmico como JSON.
+/// Envia um status HTTP e serializa o objeto dinâmico como JSON.
 ClassMethod Send(pStatus As %String = "200 OK", pData As %DynamicAbstractObject = "") As %Status
 {
     // Define o código e o texto do status HTTP da resposta.
@@ -29,7 +29,7 @@ ClassMethod Send(pStatus As %String = "200 OK", pData As %DynamicAbstractObject 
     Quit $$$OK
 }
 
-// Cria e envia uma resposta JSON padronizada para erros.
+/// Cria e envia uma resposta JSON padronizada para erros.
 ClassMethod SendError(pStatus As %String = "400 Bad Request", pMessage As %String = "Erro desconhecido") As %Status
 {
     // Cria o objeto JSON que representa o resultado da operação.
@@ -42,7 +42,7 @@ ClassMethod SendError(pStatus As %String = "400 Bad Request", pMessage As %Strin
     Quit ..Send(pStatus, res)
 }
 
-// Cria e envia uma resposta JSON padronizada para operações bem-sucedidas.
+/// Cria e envia uma resposta JSON padronizada para operações bem-sucedidas.
 ClassMethod SendSuccess(pMessage As %String = "Sucesso", pData As %DynamicObject = "") As %Status
 {
     // Cria o objeto JSON que representa o resultado da operação.
@@ -60,5 +60,5 @@ ClassMethod SendSuccess(pMessage As %String = "Sucesso", pData As %DynamicObject
     Quit ..Send("200 OK", res)
 }
 
-// Fecha a definição da classe.
+/// Fecha a definição da classe.
 }

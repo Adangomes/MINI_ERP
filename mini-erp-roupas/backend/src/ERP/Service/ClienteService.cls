@@ -28,7 +28,7 @@ ClassMethod CriarOuAtualizar(pJson As %DynamicObject) As %Status
 {
     Try {
         If '$IsObject(pJson) {
-            Quit $$$ERROR($$$GeneralError, "Dados do cliente inválidos.")
+            Return $$$ERROR($$$GeneralError, "Dados do cliente inválidos.")
         }
 
         Set cliente = ""
@@ -48,10 +48,10 @@ ClassMethod CriarOuAtualizar(pJson As %DynamicObject) As %Status
         Set cliente.Ativo = +$Get(pJson.ativo, 1)
 
         $$$THROWONERROR(sc, cliente.%Save())
-        Quit $$$OK
+        Return $$$OK
     }
     Catch ex {
-        Quit ex.AsStatus()
+        Return ex.AsStatus()
     }
 }
 

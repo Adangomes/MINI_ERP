@@ -267,8 +267,7 @@ ClassMethod ListarVendas() As %Status
     Try {
         Set periodo = %request.Data("periodo", 1)
         Set data = %request.Data("data", 1)
-        Set fuso = %request.Data("fuso", 1)
-        If fuso = "" Set fuso = 0
+        Set fuso = 0
 
         Set sc = ##class(ERP.Service.VendaService).Listar(periodo, data, fuso, .vendas)
         If $$$ISERR(sc) {

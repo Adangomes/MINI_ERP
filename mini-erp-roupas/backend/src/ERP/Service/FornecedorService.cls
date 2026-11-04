@@ -28,7 +28,7 @@ ClassMethod CriarOuAtualizar(pJson As %DynamicObject) As %Status
 {
     Try {
         If '$IsObject(pJson) {
-            Quit $$$ERROR($$$GeneralError, "Dados do fornecedor inválidos.")
+            Return $$$ERROR($$$GeneralError, "Dados do fornecedor inválidos.")
         }
 
         Set fornecedor = ""
@@ -48,10 +48,10 @@ ClassMethod CriarOuAtualizar(pJson As %DynamicObject) As %Status
         Set fornecedor.Ativo = +$Get(pJson.ativo, 1)
 
         $$$THROWONERROR(sc, fornecedor.%Save())
-        Quit $$$OK
+        Return $$$OK
     }
     Catch ex {
-        Quit ex.AsStatus()
+        Return ex.AsStatus()
     }
 }
 

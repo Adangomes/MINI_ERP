@@ -29,11 +29,11 @@ ClassMethod ListarCaixa(pInicio As %String = "", pFim As %String = "") As %Dynam
 ClassMethod RegistrarMovimentoCaixa(pJson As %DynamicObject) As %Status
 {
     Try {
-        If '$IsObject(pJson) Quit $$$ERROR($$$GeneralError, "Dados do caixa inválidos.")
-        If (pJson.tipo '= "Entrada") && (pJson.tipo '= "Saida") Quit $$$ERROR($$$GeneralError, "Tipo de movimento inválido.")
-        If (pJson.descricao = "") Quit $$$ERROR($$$GeneralError, "Descrição é obrigatória.")
-        Set valor = $ROUND(+$Get(pJson.valor), 2)
-        If valor <= 0 Quit $$$ERROR($$$GeneralError, "Valor do movimento deve ser maior que zero.")
+        If '$IsObject(pJson) Return $$$ERROR($$$GeneralError, "Dados do caixa inválidos.")
+        If (pJson.tipo '= "Entrada") && (pJson.tipo '= "Saida") Return $$$ERROR($$$GeneralError, "Tipo de movimento inválido.")
+        If (pJson.descricao = "") Return $$$ERROR($$$GeneralError, "Descrição é obrigatória.")
+        Set valor = +$Get(pJson.valor)
+        If valor <= 0 Return $$$ERROR($$$GeneralError, "Valor do movimento deve ser maior que zero.")
 
         Set movimento = ##class(ERP.Model.MovimentoCaixa).%New()
         Set movimento.Tipo = pJson.tipo
@@ -42,10 +42,10 @@ ClassMethod RegistrarMovimentoCaixa(pJson As %DynamicObject) As %Status
         Set movimento.Referencia = $Get(pJson.referencia, "")
         Set movimento.Usuario = $Get(pJson.usuario, "admin")
         $$$THROWONERROR(sc, movimento.%Save())
-        Quit $$$OK
+        Return $$$OK
     }
     Catch ex {
-        Quit ex.AsStatus()
+        Return ex.AsStatus()
     }
 }
 
@@ -95,11 +95,11 @@ ClassMethod ListarContas() As %DynamicArray
 ClassMethod RegistrarConta(pJson As %DynamicObject) As %Status
 {
     Try {
-        If '$IsObject(pJson) Quit $$$ERROR($$$GeneralError, "Dados da conta inválidos.")
-        If (pJson.tipo '= "Receber") && (pJson.tipo '= "Pagar") Quit $$$ERROR($$$GeneralError, "Tipo de conta inválido.")
-        If (pJson.descricao = "") || (pJson.dataVencimento = "") Quit $$$ERROR($$$GeneralError, "Descrição e vencimento são obrigatórios.")
-        Set valor = $ROUND(+$Get(pJson.valor), 2)
-        If valor <= 0 Quit $$$ERROR($$$GeneralError, "Valor da conta deve ser maior que zero.")
+        If '$IsObject(pJson) Return $$$ERROR($$$GeneralError, "Dados da conta inválidos.")
+        If (pJson.tipo '= "Receber") && (pJson.tipo '= "Pagar") Return $$$ERROR($$$GeneralError, "Tipo de conta inválido.")
+        If (pJson.descricao = "") || (pJson.dataVencimento = "") Return $$$ERROR($$$GeneralError, "Descrição e vencimento são obrigatórios.")
+        Set valor = +$Get(pJson.valor)
+        If valor <= 0 Return $$$ERROR($$$GeneralError, "Valor da conta deve ser maior que zero.")
 
         Set conta = ##class(ERP.Model.Conta).%New()
         Set conta.Tipo = pJson.tipo
@@ -112,10 +112,10 @@ ClassMethod RegistrarConta(pJson As %DynamicObject) As %Status
         Set conta.OrigemNome = $Get(pJson.origemNome, "")
         Set conta.Usuario = $Get(pJson.usuario, "admin")
         $$$THROWONERROR(sc, conta.%Save())
-        Quit $$$OK
+        Return $$$OK
     }
     Catch ex {
-        Quit ex.AsStatus()
+        Return ex.AsStatus()
     }
 }
 
@@ -130,7 +130,7 @@ ClassMethod RegistrarPagamento(pJson As %DynamicObject) As %Status
         If pJson.contaId = "" {
             Throw ##class(%Exception.General).%New("Conta obrigatória.")
         }
-        Set valor = $ROUND(+$Get(pJson.valor), 2)
+        Set valor = +$Get(pJson.valor)
         If valor <= 0 {
             Throw ##class(%Exception.General).%New("O valor do pagamento deve ser maior que zero.")
         }
@@ -175,11 +175,11 @@ ClassMethod RegistrarPagamento(pJson As %DynamicObject) As %Status
         $$$THROWONERROR(sc, movimento.%Save())
 
         TCOMMIT
-        Quit $$$OK
+        Return $$$OK
     }
     Catch ex {
         TROLLBACK
-        Quit ex.AsStatus()
+        Return ex.AsStatus()
     }
 }
 

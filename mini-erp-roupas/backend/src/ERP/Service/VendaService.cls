@@ -45,11 +45,11 @@ ClassMethod RegistrarVenda(pSkuId As %String, pQuantidade As %Integer) As %Statu
         $$$THROWONERROR(sc, movimento.%Save())
 
         TCOMMIT
-        Quit $$$OK
+        Return $$$OK
     }
     Catch ex {
         TROLLBACK
-        Quit ex.AsStatus()
+        Return ex.AsStatus()
     }
 }
 
@@ -89,10 +89,10 @@ ClassMethod Listar(pPeriodo As %String, pData As %String, pFuso As %Integer, ByR
             }
         }
 
-        Quit $$$OK
+        Return $$$OK
     }
     Catch ex {
-        Quit ex.AsStatus()
+        Return ex.AsStatus()
     }
 }
 
