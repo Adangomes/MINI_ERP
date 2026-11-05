@@ -6,6 +6,7 @@ ERP modular para varejo de moda, com backend em InterSystems IRIS ObjectScript/C
 
 - Produtos, variantes de tamanho/cor e estoque
 - PDV com carrinho, leitor USB em modo teclado e histórico de vendas
+- Dashboard de vendas com faturamento, pedidos, ticket médio, peças, tendências e ranking de produtos
 - Livro-razão de entradas e saídas do estoque com data/hora, usuário e terminal
 - Configuração local do terminal e impressão de comprovantes pelo navegador
 - Clientes e fornecedores
@@ -43,3 +44,5 @@ O login atual é apenas demonstrativo, com credenciais fixas no código. Não ex
 - `GET /api/estoque/movimentos` — trilha de entradas e saídas com saldo anterior/atual, origem, usuário e terminal
 
 As exportações CSV são geradas pelo navegador para vendas, contas e movimentos de caixa. PDF/XLSX, emissão fiscal, conciliação bancária e controles comerciais ainda não estão implementados.
+
+O dashboard de vendas está em `relatorios.html` e permite filtrar por período, produto e caixa, além de exportar as linhas filtradas em CSV. O ticket médio agrupa as linhas do novo checkout por pedido; vendas históricas anteriores à criação do agrupamento continuam sendo tratadas como pedidos individuais porque não havia um identificador de checkout salvo.

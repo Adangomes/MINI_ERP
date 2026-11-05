@@ -14,6 +14,7 @@ Property ValorTotal As %Currency [ Required ];
 Property Usuario As %String [ InitialExpression = "admin" ];
 Property TerminalId As %String(MAXLEN = 100);
 Property TerminalNome As %String(MAXLEN = 100);
+Property Pedido As ERP.Model.PedidoVenda;
 
 /// Fecha a definição da classe.
 }

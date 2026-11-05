@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mini ERP - Dashboard de Vendas</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <h1>Mini ERP - Relatórios</h1>
+        <nav>
+            <a href="produtos.html">Estoque</a>
+            <a href="clientes.html">Clientes</a>
+            <a href="fornecedores.html">Fornecedores</a>
+            <a href="compras.html">Compras</a>
+            <a href="financeiro.html">Financeiro</a>
+            <a href="relatorios.html" aria-current="page">Dashboard</a>
+            <a href="pdv.html">PDV</a>
+            <a href="configuracao.html">Configuração</a>
+            <a href="index.html" onclick="localStorage.removeItem('token'); localStorage.removeItem('usuario')">Sair</a>
+        </nav>
+    </header>
+
+    <main class="container report-page">
+        <section class="report-heading">
+            <div>
+                <p class="eyebrow">INTELIGÊNCIA DE VENDAS</p>
+                <h2>Dashboard</h2>
+                <p class="muted">Acompanhe faturamento, pedidos, peças e produtos em um só lugar.</p>
+            </div>
+            <button type="button" class="button-secondary" id="exportarRelatorio">Exportar CSV</button>
+        </section>
+
+        <section class="card report-filters">
+            <form id="formFiltrosRelatorio" class="form-grid report-filter-grid">
+                <label>Período
+                    <select id="periodoRelatorio">
+                        <option value="dia">Dia</option>
+                        <option value="mes" selected>Mês</option>
+                        <option value="ano">Ano</option>
+                    </select>
+                </label>
+                <label id="campoData">Data
+                    <input type="date" id="dataRelatorio">
+                </label>
+                <label id="campoMes">Mês
+                    <input type="month" id="mesRelatorio">
+                </label>
+                <label id="campoAno">Ano
+                    <input type="number" id="anoRelatorio" min="1900" max="9999">
+                </label>
+                <label>Produto
+                    <select id="filtroProduto">
+                        <option value="">Todos os produtos</option>
+                    </select>
+                </label>
+                <label>Caixa / terminal
+                    <select id="filtroTerminal">
+                        <option value="">Todos os caixas</option>
+                    </select>
+                </label>
+                <button type="submit">Aplicar filtros</button>
+            </form>
+            <p id="statusRelatorio" class="status-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="stats-grid report-kpis" aria-label="Indicadores de vendas">
+            <article class="stat-box report-kpi">
+                <span>Faturamento</span>
+                <strong id="kpiFaturamento">R$ 0,00</strong>
+                <small id="kpiPeriodo">No período selecionado</small>
+            </article>
+            <article class="stat-box report-kpi">
+                <span>Vendas / pedidos</span>
+                <strong id="kpiVendas">0</strong>
+                <small>Checkouts concluídos</small>
+            </article>
+            <article class="stat-box report-kpi">
+                <span>Ticket médio</span>
+                <strong id="kpiTicket">R$ 0,00</strong>
+                <small>Faturamento dividido pelos pedidos</small>
+            </article>
+            <article class="stat-box report-kpi">
+                <span>Peças vendidas</span>
+                <strong id="kpiPecas">0</strong>
+                <small id="kpiPecasPorVenda">0 por pedido, em média</small>
+            </article>
+        </section>
+
+        <div class="report-chart-grid">
+            <section class="card report-card">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">EVOLUÇÃO</p>
+                        <h2>Vendas ao longo do período</h2>
+                    </div>
+                    <span class="chart-caption">Faturamento por intervalo</span>
+                </div>
+                <div id="graficoVendas" class="sales-chart" role="img" aria-label="Gráfico de faturamento ao longo do período"></div>
+            </section>
+            <section class="card report-card">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">DESTAQUES</p>
+                        <h2>Mais vendidos</h2>
+                    </div>
+                    <span class="chart-caption">Por unidades</span>
+                </div>
+                <div id="rankingProdutos" class="product-ranking"></div>
+            </section>
+        </div>
+
+        <section class="card report-card">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">DETALHAMENTO</p>
+                    <h2>Itens vendidos</h2>
+                </div>
+                <span id="resumoDetalhe" class="chart-caption"></span>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data e hora</th>
+                            <th>Venda</th>
+                            <th>Produto</th>
+                            <th>Variação</th>
+                            <th>Peças</th>
+                            <th>Valor</th>
+                            <th>Usuário</th>
+                            <th>Caixa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyRelatorio"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="js/api.js"></script>
+    <script src="js/relatorios.js"></script>
+</body>
+</html>

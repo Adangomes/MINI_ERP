@@ -18,6 +18,9 @@ if result.%SQLCODE < 0 halt 1
 set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.Venda TO %DB_USER")
 if result.%SQLCODE < 0 write result.%Message,!
 if result.%SQLCODE < 0 halt 1
+set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.PedidoVenda TO %DB_USER")
+if result.%SQLCODE < 0 write result.%Message,!
+if result.%SQLCODE < 0 halt 1
 set result = $SYSTEM.SQL.Execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ERP_Model.Cliente TO %DB_USER")
 if result.%SQLCODE < 0 write result.%Message,!
 if result.%SQLCODE < 0 halt 1

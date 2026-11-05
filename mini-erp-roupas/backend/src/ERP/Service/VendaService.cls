@@ -33,6 +33,14 @@ ClassMethod RegistrarCarrinho(pJson As %DynamicObject) As %Status
         Set usuario = pJson.%Get("usuario", "admin")
         Set terminalId = pJson.%Get("terminalId", "")
         Set terminalNome = pJson.%Get("terminalNome", "")
+        Set pedido = ##class(ERP.Model.PedidoVenda).%New()
+        Set pedido.Usuario = usuario
+        Set pedido.TerminalId = terminalId
+        Set pedido.TerminalNome = terminalNome
+        $$$THROWONERROR(sc, pedido.%Save())
+
+        Set totalPedido = 0
+        Set quantidadeItens = 0
         Set iterator = pJson.itens.%GetIterator()
         While iterator.%GetNext(.key, .item) {
             Set skuId = item.%Get("skuId", "")
@@ -66,6 +74,7 @@ ClassMethod RegistrarCarrinho(pJson As %DynamicObject) As %Status
             Set venda.Usuario = usuario
             Set venda.TerminalId = terminalId
             Set venda.TerminalNome = terminalNome
+            Set venda.Pedido = pedido
             $$$THROWONERROR(sc, venda.%Save())
 
             $$$THROWONERROR(sc, ##class(ERP.Service.EstoqueService).RegistrarMovimento(sku, "Saida", quantidade, saldoAnterior, sku.QtdEstoque, "Venda", venda.%Id(), usuario, terminalId, terminalNome))
@@ -77,8 +86,14 @@ ClassMethod RegistrarCarrinho(pJson As %DynamicObject) As %Status
             Set movimento.Referencia = "Venda:" _ venda.%Id()
             Set movimento.Usuario = usuario
             $$$THROWONERROR(sc, movimento.%Save())
+
+            Set totalPedido = totalPedido + valorTotal
+            Set quantidadeItens = quantidadeItens + quantidade
         }
 
+        Set pedido.ValorTotal = totalPedido
+        Set pedido.QuantidadeItens = quantidadeItens
+        $$$THROWONERROR(sc, pedido.%Save())
         TCOMMIT
         Return $$$OK
     }
@@ -93,7 +108,7 @@ ClassMethod Listar(pPeriodo As %String, pData As %String, pFuso As %Integer, ByR
     Set pVendas = []
 
     Try {
-        Set sql = "SELECT ID, DataHora, ItemGrade, Quantidade, ValorTotal, Usuario, TerminalId, TerminalNome FROM ERP_Model.Venda"
+        Set sql = "SELECT ID, DataHora, ItemGrade, Quantidade, ValorTotal, Usuario, TerminalId, TerminalNome, Pedido FROM ERP_Model.Venda"
         Set statement = ##class(%SQL.Statement).%New()
         $$$THROWONERROR(sc, statement.%Prepare(sql))
 
@@ -103,6 +118,12 @@ ClassMethod Listar(pPeriodo As %String, pData As %String, pFuso As %Integer, ByR
             If ..DentroDoPeriodo(dataHora, pPeriodo, pData) {
                 Set item = {}
                 Set item.id = rset.%Get("ID")
+                Set pedidoId = rset.%Get("Pedido")
+                If pedidoId = "" {
+                    Set item.idVenda = "L" _ rset.%Get("ID")
+                } Else {
+                    Set item.idVenda = pedidoId
+                }
                 Set item.dataHora = dataHora
                 Set item.quantidade = rset.%Get("Quantidade")
                 Set item.valorTotal = rset.%Get("ValorTotal")
